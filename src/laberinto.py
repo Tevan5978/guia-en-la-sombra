@@ -14,25 +14,9 @@ class Laberinto:
         for fila in self.matriz:
             print(fila)
 
-    @classmethod
-    def desde_archivo(cls, ruta):
+    def validar(self):
 
-        matriz = []
-
-        with open(ruta, "r") as archivo:
-
-            for linea in archivo:
-
-                linea = linea.strip()
-
-                if linea:
-                    fila = [int(valor) for valor in linea]
-                    matriz.append(fila)
-
-        return cls(matriz)
-        def validar(self):
-    
-         entradas = 0
+        entradas = 0
         salidas = 0
 
         for fila in self.matriz:
@@ -50,7 +34,7 @@ class Laberinto:
                     self.PARED
                 ):
                     raise ValueError(
-                        f"Valor inválido: {valor}"
+                        f"Valor inválido encontrado: {valor}"
                     )
 
         if entradas != 1:
@@ -64,3 +48,36 @@ class Laberinto:
             )
 
         return True
+
+    @classmethod
+    def desde_archivo(cls, ruta):
+
+        matriz = []
+
+        with open(ruta, "r") as archivo:
+
+            for linea in archivo:
+
+                linea = linea.strip()
+
+                if linea:
+                    fila = [int(valor) for valor in linea]
+                    matriz.append(fila)
+
+        if not matriz:
+            raise ValueError("El archivo del laberinto está vacío.")
+
+        numero_columnas = len(matriz[0])
+
+        for fila in matriz:
+
+            if len(fila) != numero_columnas:
+                raise ValueError(
+                    "Todas las filas del laberinto deben tener el mismo tamaño."
+                )
+
+        laberinto = cls(matriz)
+
+        laberinto.validar()
+
+        return laberinto
