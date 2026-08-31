@@ -6,6 +6,11 @@ Esta sección documenta la estructura utilizada para representar y cargar los la
 
 La implementación corresponde al componente de **Estructura y representación del laberinto**.
 
+### Integrantes del Proyecto
+- Carlos Daniel Jiménez
+- Estevan Gonzalez Beltrán
+- Isabella Flórez
+
 ---
 
 ## Responsabilidad
