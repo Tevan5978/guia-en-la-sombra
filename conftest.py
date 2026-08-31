@@ -14,3 +14,6 @@ CARPETA_SRC = os.path.join(RAIZ_PROYECTO, "src")
 
 if CARPETA_SRC not in sys.path:
     sys.path.insert(0, CARPETA_SRC)
+    
+    
+    
