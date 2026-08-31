@@ -1,0 +1,1221 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guía en las Sombras</title>
+    <link href="https://fonts.googleapis.com/css2?family=VT323&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #080b10;
+            background-image: linear-gradient(rgba(88, 166, 255, 0.035) 1px, transparent 1px),
+                              linear-gradient(90deg, rgba(88, 166, 255, 0.035) 1px, transparent 1px),
+                              radial-gradient(circle at top, #17233a 0%, #080b10 55%);
+            background-size: 32px 32px, 32px 32px, 100% 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            color: #c9d1d9;
+        }
+
+        .presentation-container {
+            width: 100%;
+            max-width: 1200px;
+            background: #161b22;
+            border-radius: 10px;
+            border: 1px solid #30363d;
+            box-shadow: 0 24px 70px rgba(0,0,0,0.75), 0 0 0 1px rgba(88,166,255,0.08), inset 0 1px 0 rgba(255,255,255,0.05);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .terminal-bar {
+            height: 38px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 0 16px;
+            background: #0d1117;
+            border-bottom: 1px solid #30363d;
+            color: #8b949e;
+            font: 0.82em 'VT323', monospace;
+            letter-spacing: 0;
+        }
+
+        .terminal-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .terminal-dot.red { background: #ff7b72; }
+        .terminal-dot.yellow { background: #d29922; }
+        .terminal-dot.green { background: #3fb950; }
+
+        .terminal-path {
+            margin-left: 8px;
+            color: #58a6ff;
+        }
+
+        .slide {
+            display: none;
+            padding: 60px;
+            min-height: 720px;
+            background: linear-gradient(135deg, rgba(22,27,34,0.98) 0%, rgba(13,17,23,0.98) 100%);
+            animation: slideInFromBottom 0.55s cubic-bezier(.2,.8,.2,1);
+            position: relative;
+            isolation: isolate;
+        }
+
+        .slide::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg, transparent 0%, rgba(88,166,255,0.045) 50%, transparent 100%);
+            transform: translateX(-100%);
+            animation: scanSlide 1.2s ease-out 0.1s both;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .slide.active {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+        }
+
+        @keyframes slideInFromBottom {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes scanSlide {
+            to { transform: translateX(100%); }
+        }
+
+        @keyframes terminalBoot {
+            from { opacity: 0; transform: translateY(12px) scale(0.98); filter: blur(3px); }
+            to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+        }
+
+        @keyframes cursorBlink {
+            0%, 45% { opacity: 1; }
+            46%, 100% { opacity: 0; }
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        h1 {
+            color: #58a6ff;
+            font-size: 2.8em;
+            margin-bottom: 15px;
+            font-weight: 700;
+            letter-spacing: -1px;
+        }
+
+        h2 {
+            color: #79c0ff;
+            font-size: 2.2em;
+            margin-bottom: 25px;
+            font-weight: 700;
+            border-bottom: 2px solid #30363d;
+            padding-bottom: 15px;
+        }
+
+        h3 {
+            color: #79c0ff;
+            font-size: 1.4em;
+            margin-top: 25px;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        p {
+            color: #c9d1d9;
+            font-size: 1.05em;
+            line-height: 1.7;
+            margin: 12px 0;
+            font-weight: 300;
+        }
+
+        .highlight {
+            color: #79c0ff;
+            background: rgba(121, 192, 255, 0.1);
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-weight: 500;
+        }
+
+        .code-line {
+            display: block;
+            animation: slideInLeft 0.4s ease-out var(--delay, 0s) both;
+            color: #c9d1d9;
+            font-family: 'VT323', monospace;
+            font-size: 1.1em;
+            line-height: 1.6;
+            margin: 4px 0;
+        }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .code-block {
+            background: #0d1117;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            padding: 20px;
+            margin: 20px 0;
+            overflow-x: auto;
+            font-family: 'VT323', monospace;
+            font-size: 0.95em;
+            line-height: 1.6;
+            color: #c9d1d9;
+            box-shadow: inset 4px 0 0 rgba(35, 134, 54, 0.65), 0 12px 30px rgba(0,0,0,0.18);
+            position: relative;
+        }
+
+        .code-block::before {
+            content: '$ python';
+            display: block;
+            color: #3fb950;
+            opacity: 0.7;
+            margin-bottom: 10px;
+            font-size: 0.9em;
+        }
+
+        .code-block span {
+            display: block;
+        }
+
+        .keyword {
+            color: #ff7b72;
+            font-weight: 600;
+        }
+
+        .function {
+            color: #d2a8ff;
+        }
+
+        .string {
+            color: #a5d6ff;
+        }
+
+        .comment {
+            color: #8b949e;
+            font-style: italic;
+        }
+
+        .number {
+            color: #79c0ff;
+        }
+
+        .explanation {
+            background: rgba(121, 192, 255, 0.08);
+            border-left: 4px solid #79c0ff;
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+            color: #c9d1d9;
+            line-height: 1.7;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+        }
+
+        .title-slide {
+            background: linear-gradient(135deg, #161b22 0%, #0d1117 100%);
+            justify-content: center;
+            text-align: center;
+        }
+
+        .title-slide h1 {
+            font-size: 3.5em;
+            margin-bottom: 20px;
+            animation: terminalBoot 0.8s ease-out;
+            text-shadow: 0 0 24px rgba(88,166,255,0.35);
+        }
+
+        .title-slide p {
+            font-size: 1.3em;
+            color: #8b949e;
+            animation: fadeIn 1s ease-out 0.2s both;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 60px;
+            background: #0d1117;
+            border-top: 1px solid #30363d;
+            color: #c9d1d9;
+            position: relative;
+        }
+
+        .progress-track {
+            position: absolute;
+            top: -2px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: #21262d;
+        }
+
+        .progress-bar {
+            display: block;
+            width: 3.33%;
+            height: 100%;
+            background: #3fb950;
+            box-shadow: 0 0 10px rgba(63,185,80,0.8);
+            transition: width 0.35s ease;
+        }
+
+        button {
+            background: #238636;
+            color: white;
+            border: 1px solid #2ea043;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.95em;
+            font-weight: 600;
+            transition: all 0.2s;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        button:hover {
+            background: #2ea043;
+            box-shadow: 0 0 12px rgba(46, 160, 67, 0.4);
+            transform: translateY(-1px);
+        }
+
+        button:active {
+            transform: translateY(1px);
+        }
+
+        button:disabled {
+            background: #30363d;
+            color: #8b949e;
+            cursor: not-allowed;
+            border-color: #30363d;
+        }
+
+        .slide-counter {
+            font-size: 0.95em;
+            color: #8b949e;
+            background: rgba(121, 192, 255, 0.1);
+            padding: 8px 12px;
+            border-radius: 4px;
+        }
+
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .comparison-box {
+            background: #0d1117;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            padding: 15px;
+        }
+
+        .comparison-box h4 {
+            color: #79c0ff;
+            margin-bottom: 10px;
+            font-size: 0.95em;
+        }
+
+        ul, ol {
+            margin-left: 30px;
+            color: #c9d1d9;
+        }
+
+        li {
+            margin: 8px 0;
+            line-height: 1.6;
+        }
+
+        .step {
+            background: rgba(121, 192, 255, 0.05);
+            border-left: 3px solid #79c0ff;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+
+        .step strong {
+            color: #79c0ff;
+        }
+
+        .alert {
+            background: rgba(248, 113, 113, 0.1);
+            border-left: 3px solid #f85149;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+            color: #f85149;
+        }
+
+        .success {
+            background: rgba(35, 134, 54, 0.1);
+            border-left: 3px solid #238636;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+            color: #3fb950;
+        }
+
+        .diagram {
+            background: #0d1117;
+            border: 1px solid #30363d;
+            padding: 20px;
+            border-radius: 6px;
+            margin: 20px 0;
+            font-family: 'VT323', monospace;
+            color: #79c0ff;
+            line-height: 1.8;
+            text-align: center;
+        }
+
+        .matrix-example {
+            background: #0d1117;
+            border: 1px solid #30363d;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 15px 0;
+            font-family: 'VT323', monospace;
+            color: #79c0ff;
+            display: inline-block;
+            min-width: 200px;
+        }
+
+        .fade-in-text {
+            animation: fadeIn 0.6s ease-out var(--delay, 0s) both;
+        }
+
+        .slide.active > * {
+            animation: terminalBoot 0.55s ease-out both;
+        }
+
+        .slide.active > *:nth-child(2) { animation-delay: 0.08s; }
+        .slide.active > *:nth-child(3) { animation-delay: 0.16s; }
+        .slide.active > *:nth-child(4) { animation-delay: 0.24s; }
+        .slide.active > *:nth-child(5) { animation-delay: 0.32s; }
+
+        .title-slide::after {
+            content: '_';
+            color: #3fb950;
+            animation: cursorBlink 1s steps(1) infinite;
+            font: 2em 'VT323', monospace;
+            position: absolute;
+            bottom: 48px;
+            left: 50%;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .flex-center {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        @media (max-width: 768px) {
+            .slide {
+                padding: 40px 30px;
+                min-height: auto;
+            }
+
+            h1 {
+                font-size: 2em;
+            }
+
+            h2 {
+                font-size: 1.6em;
+            }
+
+            .code-block {
+                font-size: 0.85em;
+            }
+
+            .controls {
+                padding: 15px 30px;
+            }
+
+            .terminal-path {
+                display: none;
+            }
+
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation-container">
+        <div class="terminal-bar">
+            <span class="terminal-dot red"></span>
+            <span class="terminal-dot yellow"></span>
+            <span class="terminal-dot green"></span>
+            <span class="terminal-path">~/guia-en-la-sombra/src/presentacion</span>
+        </div>
+        <!-- Slide 1: Título -->
+        <div class="slide active title-slide">
+            <h1>Guía en las Sombras</h1>
+            <p>Hecho por: Estevan Gonzalez Beltran, Carlos Daniel Jimenez Gil, Isabella Florez Cano</p>
+            <p style="margin-top: 25px; max-width: 850px; align-self: center; font-size: 1.1em;">
+                En este juego debes recorrer un laberinto desde la entrada hasta la salida, avanzando por los caminos disponibles y evitando las paredes. El proyecto utiliza matrices y algoritmos de búsqueda para representar, generar y encontrar la solución de cada nivel.
+            </p>
+            <p style="margin-top: 40px; font-size: 0.95em; color: #8b949e;">
+                Videojuego de Laberintos • Avance del Proyecto Final • Estructuras de Datos
+            </p>
+        </div>
+
+        <!-- Slide 2: Qué vamos a aprender -->
+        <div class="slide">
+            <h2>📚 Qué vamos a ver</h2>
+            <ul style="margin-top: 30px; font-size: 1.1em;">
+                <li class="fade-in-text" style="--delay: 0.1s;"><strong>La clase Laberinto:</strong> Cómo se almacenan y cargan los datos</li>
+                <li class="fade-in-text" style="--delay: 0.2s;"><strong>Generación de Laberintos:</strong> Algoritmo de Backtracking Recursivo</li>
+                <li class="fade-in-text" style="--delay: 0.3s;"><strong>Operaciones sobre Matrices:</strong> Búsqueda, validación y recorridos</li>
+                <li class="fade-in-text" style="--delay: 0.4s;"><strong>Búsqueda de Caminos:</strong> Algoritmo BFS (Breadth-First Search)</li>
+                <li class="fade-in-text" style="--delay: 0.5s;"><strong>Validación:</strong> Cómo garantizar que los datos sean válidos</li>
+            </ul>
+            <p style="margin-top: 40px; color: #8b949e; font-size: 0.95em;">Entenderemos el <span class="highlight">por qué</span> de cada línea de código </p>
+        </div>
+
+        <!-- Slide 3: Introducción a Clases -->
+        <div class="slide">
+            <h2> ¿Qué es una Clase?</h2>
+            <p style="margin-top: 25px;">Una clase es como un <span class="highlight">molde o plano</span> que define cómo será un objeto. En nuestro caso, creamos la clase <span class="highlight">Laberinto</span> para:</p>
+            <ul style="margin-top: 20px;">
+                <li>Almacenar los datos del laberinto (matriz)</li>
+                <li>Cuidar esos datos (validación)</li>
+                <li>Proporcionar operaciones (métodos) para trabajar con ellos</li>
+            </ul>
+            <div class="explanation" style="margin-top: 30px;">
+                <strong>Analía:</strong> Piensa en una clase como un <strong>receta</strong>. La receta te dice qué ingredientes necesitas y cómo combinarlos. Cada vez que usas la receta, creas una <strong>instancia</strong> (un pastel concreto).
+            </div>
+        </div>
+
+        <!-- Slide 4: Constantes de la clase Laberinto -->
+        <div class="slide">
+            <h2> Las Constantes del Laberinto</h2>
+            <div class="code-block">
+<span class="code-line" style="--delay: 0s;"><span class="keyword">class</span> <span class="function">Laberinto</span>:</span>
+<span class="code-line" style="--delay: 0.1s;">    </span>
+<span class="code-line" style="--delay: 0.2s;">    CAMINO = <span class="number">0</span></span>
+<span class="code-line" style="--delay: 0.3s;">    PARED = <span class="number">1</span></span>
+<span class="code-line" style="--delay: 0.4s;">    ENTRADA = <span class="number">2</span></span>
+<span class="code-line" style="--delay: 0.5s;">    SALIDA = <span class="number">3</span></span>
+            </div>
+            <div class="explanation" style="margin-top: 25px;">
+                <strong>¿Por qué?</strong> Usamos números para representar cada tipo de celda porque:
+                <ul style="margin-top: 10px;">
+                    <li>Es <strong>eficiente</strong> en memoria (un número ocupa menos espacio que texto)</li>
+                    <li>Es <strong>rápido</strong> comparar números que cadenas de texto</li>
+                    <li>Facilita el uso de <strong>matrices numéricas</strong> (NumPy, etc.)</li>
+                </ul>
+            </div>
+            <p style="margin-top: 15px; color: #8b949e; font-size: 0.9em;">💡 <span class="highlight">CAMINO = 0</span> es una constante de clase (igual para todas las instancias)</p>
+        </div>
+
+        <!-- Slide 5: El Constructor __init__ -->
+        <div class="slide">
+            <h2>🔧 El Constructor __init__</h2>
+            <div class="code-block">
+<span class="code-line" style="--delay: 0s;;">    <span class="keyword">def</span> <span class="function">__init__</span>(<span class="keyword">self</span>, matriz):</span>
+<span class="code-line" style="--delay: 0.15s;">        <span class="keyword">self</span>.matriz = matriz</span>
+<span class="code-line" style="--delay: 0.3s;">        <span class="keyword">self</span>.filas = <span class="function">len</span>(matriz)</span>
+<span class="code-line" style="--delay: 0.45s;">        <span class="keyword">self</span>.columnas = <span class="function">len</span>(matriz[<span class="number">0</span>])</span>
+            </div>
+            <div class="step" style="margin-top: 25px;">
+                <strong>Línea 1:</strong> <code>def __init__(self, matriz):</code>
+                <p>Esto se ejecuta cuando creamos una nueva instancia: <code>laberinto = Laberinto(matriz)</code></p>
+            </div>
+            <div class="step">
+                <strong>Línea 2:</strong> <code>self.matriz = matriz</code>
+                <p>Guardamos la matriz en el objeto. <span class="highlight">self</span> significa "este objeto"</p>
+            </div>
+            <div class="step">
+                <strong>Líneas 3-4:</strong> Calculamos las dimensiones
+                <p><code>len(matriz)</code> nos da el número de <span class="highlight">filas</span>, y <code>len(matriz[0])</code> nos da las <span class="highlight">columnas</span></p>
+            </div>
+        </div>
+
+        <!-- Slide 6: El método mostrar() -->
+        <div class="slide">
+            <h2> Mostrar el Laberinto</h2>
+            <div class="code-block">
+<span class="code-line" style="--delay: 0s;">    <span class="keyword">def</span> <span class="function">mostrar</span>(<span class="keyword">self</span>):</span>
+<span class="code-line" style="--delay: 0.15s;">        <span class="keyword">for</span> fila <span class="keyword">in</span> <span class="keyword">self</span>.matriz:</span>
+<span class="code-line" style="--delay: 0.3s;">            <span class="function">print</span>(fila)</span>
+            </div>
+            <div class="explanation" style="margin-top: 25px;">
+                <strong>¿Qué hace?</strong> Itera sobre cada fila y la imprime. Simple pero efectivo para debugging.
+                <br><br>
+                <strong>¿Por qué es útil?</strong> Cuando desarrollamos, necesitamos ver los datos. Este método nos permite visualizar rápidamente cómo se ve el laberinto.
+            </div>
+            <div class="success" style="margin-top: 20px;">
+                ✅ Este método es de <strong>propósito general</strong>: funciona para cualquier matriz, sin depender de valores específicos
+            </div>
+        </div>
+
+        <!-- Slide 7: Validación - Parte 1 -->
+        <div class="slide">
+            <h2> Validar el Laberinto - Parte 1</h2>
+            <div class="code-block">
+<span class="code-line" style="--delay: 0s;">    <span class="keyword">def</span> <span class="function">validar</span>(<span class="keyword">self</span>):</span>
+<span class="code-line" style="--delay: 0.1s;">        entradas = <span class="number">0</span></span>
+<span class="code-line" style="--delay: 0.2s;">        salidas = <span class="number">0</span></span>
+<span class="code-line" style="--delay: 0.3s;">        </span>
+<span class="code-line" style="--delay: 0.4s;">        <span class="keyword">for</span> fila <span class="keyword">in</span> <span class="keyword">self</span>.matriz:</span>
+<span class="code-line" style="--delay: 0.5s;">            <span class="keyword">for</span> valor <span class="keyword">in</span> fila:</span>
+<span class="code-line" style="--delay: 0.6s;">                <span class="keyword">if</span> valor == <span class="keyword">self</span>.ENTRADA:</span>
+<span class="code-line" style="--delay: 0.7s;">                    entradas += <span class="number">1</span></span>
+            </div>
+            <div class="step" style="margin-top: 25px;">
+                <strong>Líneas 1-2:</strong> Inicializamos contadores en 0
+                <p>Usaremos estos para contar cuántas entradas y salidas encontramos</p>
+            </div>
+            <div class="step">
+                <strong>Líneas 4-7:</strong> Doble bucle anidado
+                <p>Iteramos cada fila, y dentro de cada fila, iteramos cada valor (celda). Si es una ENTRADA, sumamos 1 al contador.</p>
+            </div>
+        </div>
+
+        <!-- Slide 8: Validación - Parte 2 -->
+        <div class="slide">
+            <h2> Validar el Laberinto - Parte 2</h2>
+            <div class="code-block">
+<span class="code-line" style="--delay: 0s;">                <span class="keyword">elif</span> valor == <span class="keyword">self</span>.SALIDA:</span>
+<span class="code-line" style="--delay: 0.15s;">                    salidas += <span class="number">1</span></span>
+<span class="code-line" style="--delay: 0.3s;">                <span class="keyword">elif</span> valor <span class="keyword">not in</span> (</span>
+<span class="code-line" style="--delay: 0.45s;">                    <span class="keyword">self</span>.CAMINO,</span>
+<span class="code-line" style="--delay: 0.6s;">                    <span class="keyword">self</span>.PARED</span>
+<span class="code-line" style="--delay: 0.75s;">                ):</span>
+<span class="code-line" style="--delay: 0.9s;">                    <span class="keyword">raise</span> <span class="function">ValueError</span>(</span>
+<span class="code-line" style="--delay: 1.05s;">                        <span class="string">f"Valor inválido encontrado: {valor}"</span></span>
+<span class="code-line" style="--delay: 1.2s;">                    )</span>
+            </div>
+            <div class="explanation" style="margin-top: 20px;">
+                <strong>¿Qué hace?</strong> Después de contar las salidas, verificamos que TODOS los valores sean válidos (0, 1, 2 o 3).
+                <br><br>
+                <strong>¿Por qué?</strong> Si alguien nos pasa un archivo con basura (como un 5 o un -1), queremos saberlo INMEDIATAMENTE.
+            </div>
+            <div class="alert" style="margin-top: 20px;">
+                ⚠️ Si encuentra un valor inválido, <strong>lanza una excepción</strong> (ValueError) - el programa se detiene y mostrará un error
+            </div>
+        </div>
+
+        <!-- Slide 9: Validación - Parte 3 -->
+        <div class="slide">
+            <h2> Validar el Laberinto - Parte 3</h2>
+            <div class="code-block">
+<span class="code-line" style="--delay: 0s;">        <span class="keyword">if</span> entradas != <span class="number">1</span>:</span>
+<span class="code-line" style="--delay: 0.15s;">            <span class="keyword">raise</span> <span class="function">ValueError</span>(</span>
+<span class="code-line" style="--delay: 0.3s;">                <span class="string">"El laberinto debe tener exactamente una entrada."</span></span>
+<span class="code-line" style="--delay: 0.45s;">            )</span>
+<span class="code-line" style="--delay: 0.6s;">        </span>
+<span class="code-line" style="--delay: 0.75s;">        <span class="keyword">if</span> salidas != <span class="number">1</span>:</span>
+<span class="code-line" style="--delay: 0.9s;">            <span class="keyword">raise</span> <span class="function">ValueError</span>(</span>
+<span class="code-line" style="--delay: 1.05s;">                <span class="string">"El laberinto debe tener exactamente una salida."</span></span>
+<span class="code-line" style="--delay: 1.2s;">            )</span>
+            </div>
+            <div class="step" style="margin-top: 25px;">
+                <strong>La regla de oro:</strong> Todo laberinto debe tener EXACTAMENTE 1 entrada y 1 salida
+                <p>Si encontramos más o menos, algo está mal y rechazamos el laberinto</p>
+            </div>
+            <div class="step">
+                <strong>¿Por qué es importante?</strong>
+                <ul style="margin-top: 10px;">
+                    <li>Sin entrada: ¿Dónde empieza el jugador?</li>
+                    <li>Sin salida: ¿Dónde termina?</li>
+                    <li>Múltiples: Genera ambigüedad</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 10: desde_archivo - Parte 1 -->
+        <div class="slide">
+            <h2> Cargar desde Archivo - Parte 1</h2>
+            <div class="code-block">
+<span class="code-line" style="--delay: 0s;">    <span class="keyword">@classmethod</span></span>
+<span class="code-line" style="--delay: 0.15s;">    <span class="keyword">def</span> <span class="function">desde_archivo</span>(<span class="keyword">cls</span>, ruta):</span>
+<span class="code-line" style="--delay: 0.3s;">        matriz = []</span>
+<span class="code-line" style="--delay: 0.45s;">        </span>
+<span class="code-line" style="--delay: 0.6s;">        <span class="keyword">with</span> <span class="function">open</span>(ruta, <span class="string">"r"</span>) <span class="keyword">as</span> archivo:</span>
+<span class="code-line" style="--delay: 0.75s;">            <span class="keyword">for</span> linea <span class="keyword">in</span> archivo:</span>
+<span class="code-line" style="--delay: 0.9s;">                linea = linea.<span class="function">strip</span>()</span>
+            </div>
+            <div class="step" style="margin-top: 25px;">
+                <strong>@classmethod:</strong> Este es un método de clase, no de instancia. Se llama así: <code>Laberinto.desde_archivo(...)</code>
+                <p>No necesitamos un objeto existente para usarlo</p>
+            </div>
+            <div class="step">
+                <strong>with open(...):</strong> Abre el archivo de forma segura
+                <p>Python lo cierra automáticamente cuando termina, incluso si hay un error</p>
+            </div>
+            <div class="step">
+                <strong>linea.strip():</strong> Elimina espacios en blanco al inicio y final
+                <p>Útil para limpiar datos "sucios" que vienen del archivo</p>
+            </div>
+        </div>
+
+        <!-- Slide 11: desde_archivo - Parte 2 -->
+        <div class="slide">
+            <h2>Cargar desde Archivo - Parte 2</h2>
+            <div class="code-block">
+<span class="code-line" style="--delay: 0s;">                <span class="keyword">if</span> linea:</span>
+<span class="code-line" style="--delay: 0.15s;">                    fila = [<span class="function">int</span>(valor) <span class="keyword">for</span> valor <span class="keyword">in</span> linea]</span>
+<span class="code-line" style="--delay: 0.3s;">                    matriz.<span class="function">append</span>(fila)</span>
+            </div>
+            <div class="explanation" style="margin-top: 25px;">
+                <strong>if linea:</strong> Solo procesa líneas que no estén vacías
+                <p>Saltos de línea o espacios en blanco se ignoran</p>
+            </div>
+            <div class="step" style="margin-top: 20px;">
+                <strong>List Comprehension:</strong> <code>[int(valor) for valor in linea]</code>
+                <p>Es una forma compacta y pythónica de hacer esto:</p>
+                <div class="code-block" style="margin-top: 10px; font-size: 0.9em;">
+<span style="display: block;"><span class="comment"># Forma antigua (feo):</span></span>
+<span style="display: block;">fila = []</span>
+<span style="display: block;"><span class="keyword">for</span> valor <span class="keyword">in</span> linea:</span>
+<span style="display: block;">    fila.<span class="function">append</span>(<span class="function">int</span>(valor))</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 12: desde_archivo - Parte 3 -->
+        <div class="slide">
+            <h2> Cargar desde Archivo - Parte 3</h2>
+            <div class="code-block">
+<span class="code-line" style="--delay: 0s;">        <span class="keyword">if</span> <span class="keyword">not</span> matriz:</span>
+<span class="code-line" style="--delay: 0.15s;">            <span class="keyword">raise</span> <span class="function">ValueError</span>(</span>
+<span class="code-line" style="--delay: 0.3s;">                <span class="string">"El archivo del laberinto está vacío."</span></span>
+<span class="code-line" style="--delay: 0.45s;">            )</span>
+<span class="code-line" style="--delay: 0.6s;">        </span>
+<span class="code-line" style="--delay: 0.75s;">        numero_columnas = <span class="function">len</span>(matriz[<span class="number">0</span>])</span>
+<span class="code-line" style="--delay: 0.9s;">        </span>
+<span class="code-line" style="--delay: 1.05s;">        <span class="keyword">for</span> fila <span class="keyword">in</span> matriz:</span>
+<span class="code-line" style="--delay: 1.2s;">            <span class="keyword">if</span> <span class="function">len</span>(fila) != numero_columnas:</span>
+<span class="code-line" style="--delay: 1.35s;">                <span class="keyword">raise</span> <span class="function">ValueError</span>(</span>
+<span class="code-line" style="--delay: 1.5s;">                    <span class="string">"Todas las filas deben tener el mismo tamaño."</span></span>
+<span class="code-line" style="--delay: 1.65s;">                )</span>
+            </div>
+            <div class="step" style="margin-top: 20px;">
+                <strong>Validación de forma:</strong> Comprobamos que la matriz sea "rectangular"
+                <p>Si una fila tiene 5 columnas pero otra tiene 7, algo está mal 🚨</p>
+            </div>
+        </div>
+
+        <!-- Slide 13: desde_archivo - Parte 4 -->
+        <div class="slide">
+            <h2>Cargar desde Archivo - Parte 4</h2>
+            <div class="code-block">
+<span class="code-line" style="--delay: 0s;">        laberinto = <span class="keyword">cls</span>(matriz)</span>
+<span class="code-line" style="--delay: 0.15s;">        laberinto.<span class="function">validar</span>()</span>
+<span class="code-line" style="--delay: 0.3s;">        <span class="keyword">return</span> laberinto</span>
+            </div>
+            <div class="step" style="margin-top: 25px;">
+                <strong>cls(matriz):</strong> Crea una nueva instancia usando el constructor
+                <p>Es equivalente a: <code>Laberinto(matriz)</code></p>
+            </div>
+            <div class="step">
+                <strong>laberinto.validar():</strong> Ejecuta todas nuestras validaciones
+                <p>Si algo falla aquí, el método lanza una excepción y el usuario se da cuenta</p>
+            </div>
+            <div class="success" style="margin-top: 20px;">
+                 <strong>Principio importante:</strong> Validar los datos LO ANTES POSIBLE. No queremos procesar datos inválidos.
+            </div>
+        </div>
+
+        <!-- Slide 14: Introducción al Generador -->
+        <div class="slide">
+            <h2> Generador de Laberintos - Introducción</h2>
+            <div class="explanation">
+                <strong>Algoritmo: Recursive Backtracking (Retroceso Recursivo)</strong>
+                <p style="margin-top: 10px;">Es una forma elegante de generar laberintos aleatorios que garantiza:</p>
+                <ul style="margin-top: 10px;">
+                    <li>Siempre hay un camino desde la entrada a la salida</li>
+                    <li>No hay ciclos cerrados (lo que lo hace más difícil)</li>
+                    <li>Cada laberinto es único</li>
+                </ul>
+            </div>
+            <div class="step" style="margin-top: 25px;">
+                <strong>¿Cómo funciona?</strong>
+                <ol style="margin-top: 10px;">
+                    <li>Llenar TODO de paredes (1)</li>
+                    <li>Empezar desde una celda y "excavar" caminos (0)</li>
+                    <li>Cuando nos quedamos sin opciones, retroceder y probar otra dirección</li>
+                    <li>Repetir hasta que todo esté explorado</li>
+                </ol>
+            </div>
+        </div>
+
+        <!-- Slide 15: generar_laberinto() -->
+        <div class="slide">
+            <h2> Función generar_laberinto()</h2>
+            <div class="code-block">
+<span class="code-line" style="--delay: 0s;"><span class="keyword">def</span> <span class="function">generar_laberinto</span>(filas, columnas):</span>
+<span class="code-line" style="--delay: 0.15s;">    <span class="comment"># Matriz llena de paredes (1)</span></span>
+<span class="code-line" style="--delay: 0.3s;">    matriz = [[<span class="number">1</span> <span class="keyword">for</span> _ <span class="keyword">in</span> <span class="function">range</span>(columnas)] </span>
+<span class="code-line" style="--delay: 0.45s;">            <span class="keyword">for</span> _ <span class="keyword">in</span> <span class="function">range</span>(filas)]</span>
+<span class="code-line" style="--delay: 0.6s;">    </span>
+<span class="code-line" style="--delay: 0.75s;">    _cavar(matriz, <span class="number">1</span>, <span class="number">1</span>, filas, columnas)</span>
+<span class="code-line" style="--delay: 0.9s;">    colocar_entrada_salida(matriz)</span>
+<span class="code-line" style="--delay: 1.05s;">    <span class="keyword">return</span> matriz</span>
+            </div>
+            <div class="step" style="margin-top: 20px;">
+                <strong>Línea 1-2:</strong> List Comprehension anidada
+                <p>Crea una matriz donde TODOS los valores son 1 (paredes). Es el punto de partida.</p>
+            </div>
+            <div class="step">
+                <strong>Línea 4:</strong> <code>_cavar(matriz, 1, 1, ...)</code>
+                <p>Comienza desde la posición (1,1) - no desde (0,0) porque queremos que el borde sea puro</p>
+            </div>
+            <div class="step">
+                <strong>Línea 5-6:</strong> Coloca la entrada y salida, y devuelve la matriz
+            </div>
+        </div>
+
+        <!-- Slide 16: _cavar() - Parte 1 -->
+        <div class="slide">
+            <h2> Función _cavar() - La Recursión</h2>
+            <div class="code-block">
+<span class="code-line" style="--delay: 0s;"><span class="keyword">def</span> <span class="function">_cavar</span>(matriz, fila, columna, filas, columnas):</span>
+<span class="code-line" style="--delay: 0.15s;">    <span class="comment"># Marcar celda actual como camino</span></span>
+<span class="code-line" style="--delay: 0.3s;">    matriz[fila][columna] = <span class="number">0</span></span>
+<span class="code-line" style="--delay: 0.45s;">    </span>
+<span class="code-line" style="--delay: 0.6s;">    <span class="comment"># Posibles direcciones: arriba, abajo, izquierda, derecha</span></span>
+<span class="code-line" style="--delay: 0.75s;">    direcciones = [(<span class="number">-2</span>, <span class="number">0</span>), (<span class="number">2</span>, <span class="number">0</span>), (<span class="number">0</span>, <span class="number">-2</span>), (<span class="number">0</span>, <span class="number">2</span>)]</span>
+            </div>
+            <div class="step" style="margin-top: 20px;">
+                <strong>¿Por qué (-2, 0) y no (-1, 0)?</strong>
+                <p>Si nos movemos de 1 en 1, terminaremos con celdas sin paredes. Movernos de 2 en 2 deja espacio para paredes entre los caminos.</p>
+            </div>
+            <div class="diagram" style="margin-top: 20px; text-align: left;">
+                Movimiento de 2 en 2:
+                <div style="margin-top: 10px; font-family: monospace; font-size: 0.9em;">
+█ █ █ █ █<br>
+█ . █ . █<br>
+█ █ █ █ █<br>
+█ . █ . █<br>
+█ █ █ █ █
+                </div>
+                <p style="margin-top: 10px; font-size: 0.85em;">Los "." son celdas excavadas, "█" son paredes. Nótese el patrón regular.</p>
+            </div>
+        </div>
+
+        <!-- Slide 17: _cavar() - Parte 2 -->
+        <div class="slide">
+            <h2> Función _cavar() - Aleatoriedad</h2>
+            <div class="code-block">
+<span class="code-line" style="--delay: 0s;">    random.<span class="function">shuffle</span>(direcciones)</span>
+<span class="code-line" style="--delay: 0.15s;">    </span>
+<span class="code-line" style="--delay: 0.3s;">    <span class="keyword">for</span> delta_fila, delta_columna <span class="keyword">in</span> direcciones:</span>
+<span class="code-line" style="--delay: 0.45s;">        nueva_fila = fila + delta_fila</span>
+<span class="code-line" style="--delay: 0.6s;">        nueva_columna = columna + delta_columna</span>
+            </div>
+            <div class="step" style="margin-top: 20px;">
+                <strong>random.shuffle(direcciones):</strong> Mezcla el orden de las direcciones
+                <p>Sin esto, todos los laberintos se verían igual. Con esto, cada laberinto es único.</p>
+            </div>
+            <div class="step">
+                <strong>Bucle for:</strong> Intentamos ir en cada dirección (pero en orden aleatorio)
+                <p>Para cada dirección, calculamos dónde estaríamos si nos moveríamos</p>
+            </div>
+        </div>
+
+        <!-- Slide 18: _cavar() - Parte 3 -->
+        <div class="slide">
+            <h2> Función _cavar() - Validación</h2>
+            <div class="code-block">
+<span class="code-line" style="--delay: 0s;">        dentro_del_rango = (</span>
+<span class="code-line" style="--delay: 0.15s;">            <span class="number">0</span> &lt; nueva_fila &lt; filas - <span class="number">1</span> <span class="keyword">and</span></span>
+<span class="code-line" style="--delay: 0.3s;">            <span class="number">0</span> &lt; nueva_columna &lt; columnas - <span class="number">1</span></span>
+<span class="code-line" style="--delay: 0.45s;">        )</span>
+<span class="code-line" style="--delay: 0.6s;">        </span>
+<span class="code-line" style="--delay: 0.75s;">        <span class="keyword">if</span> dentro_del_rango <span class="keyword">and</span> matriz[nueva_fila][nueva_columna] == <span class="number">1</span>:</span>
+            </div>
+            <div class="step" style="--delay: 1.0s; margin-top: 20px;">
+                <strong>¿Por qué > 0 y < filas-1?</strong>
+                <p>Queremos que los bordes sean siempre paredes. No excavamos en los bordes.</p>
+            </div>
+            <div class="step">
+                <strong>matriz[...] == 1:</strong> Solo excavamos si hay una pared
+                <p>Si ya es un camino (0), la saltamos. Evita crear ciclos.</p>
+            </div>
+        </div>
+
+        <!-- Slide 19: _cavar() - Parte 4 -->
+        <div class="slide">
+            <h2> Función _cavar() - La Recursión</h2>
+            <div class="code-block">
+<span class="code-line" style="--delay: 0s;">            <span class="comment"># Romper la pared entre actual y nueva</span></span>
+<span class="code-line" style="--delay: 0.15s;">            matriz[fila + delta_fila <span class="keyword">//</span> <span class="number">2</span>][columna + delta_columna <span class="keyword">//</span> <span class="number">2</span>] = <span class="number">0</span></span>
+<span class="code-line" style="--delay: 0.3s;">            </span>
+<span class="code-line" style="--delay: 0.45s;">            <span class="comment"># Llamada recursiva</span></span>
+<span class="code-line" style="--delay: 0.6s;">            _cavar(matriz, nueva_fila, nueva_columna, filas, columnas)</span>
+            </div>
+            <div class="step" style="margin-top: 20px;">
+                <strong>// 2 (división entera):</strong> Encontramos la celda del medio
+                <p>Si estamos en (1,1) y nos movemos a (3,1), el medio es (2,1). Excavamos esa pared.</p>
+            </div>
+            <div class="step">
+                <strong>Llamada Recursiva:</strong> <code>_cavar(...)</code> se llama a sí misma
+                <p>Continúa excavando desde la nueva posición. Esto es lo que crea la estructura en árbol del laberinto.</p>
+            </div>
+            <div class="success" style="margin-top: 20px;">
+                 Cuando no hay más direcciones válidas, la recursión se detiene automáticamente y retrocede (backtrack).
+            </div>
+        </div>
+
+        <!-- Slide 20: Operaciones - Introducción -->
+        <div class="slide">
+            <h2> Operaciones sobre Matrices</h2>
+            <div class="explanation">
+                <strong>¿Por qué un archivo separado para operaciones?</strong>
+                <ul style="margin-top: 10px;">
+                    <li>Separación de responsabilidades (cada módulo hace una cosa bien)</li>
+                    <li>Las operaciones funcionan tanto con objetos Laberinto como con matrices crudas</li>
+                    <li>Facilita las pruebas unitarias</li>
+                    <li>Reutilizable para otros proyectos</li>
+                </ul>
+            </div>
+            <div class="step" style="margin-top: 25px;">
+                <strong>Los tres pilares:</strong>
+                <ol style="margin-top: 10px;">
+                    <li><strong>Validación:</strong> ¿Esta posición es válida?</li>
+                    <li><strong>Acceso:</strong> ¿Qué valor hay en esta posición?</li>
+                    <li><strong>Búsqueda:</strong> ¿Dónde está X?</li>
+                </ol>
+            </div>
+        </div>
+
+        <!-- Slide 21: esta_dentro_de_limites() -->
+        <div class="slide">
+            <h2> Validación de Límites</h2>
+            <div class="code-block">
+<span class="code-line" style="--delay: 0s;"><span class="keyword">def</span> <span class="function">esta_dentro_de_limites</span>(objeto, fila, columna):</span>
+<span class="code-line" style="--delay: 0.15s;">    matriz = <span class="function">_obtener_matriz</span>(objeto)</span>
+<span class="code-line" style="--delay: 0.3s;">    filas = <span class="function">len</span>(matriz)</span>
+<span class="code-line" style="--delay: 0.45s;">    columnas = <span class="function">len</span>(matriz[<span class="number">0</span>]) <span class="keyword">if</span> filas > <span class="number">0</span> <span class="keyword">else</span> <span class="number">0</span></span>
+<span class="code-line" style="--delay: 0.6s;">    <span class="keyword">return</span> <span class="number">0</span> &lt;= fila &lt; filas <span class="keyword">and</span> <span class="number">0</span> &lt;= columna &lt; columnas</span>
+            </div>
+            <div class="step" style="margin-top: 20px;">
+                <strong>¿Por qué if filas > 0?</strong>
+                <p>Si la matriz está vacía, no tiene filas y acceder a matriz[0] causaría un error.</p>
+            </div>
+            <div class="step">
+                <strong>Rango válido:</strong> fila entre 0 y filas-1, columna entre 0 y columnas-1
+                <p>Es la forma pythónica de verificar límites. Usamos &lt; en lugar de &lt;= porque los índices comienzan en 0.</p>
+            </div>
+        </div>
+
+        <!-- Slide 22: obtener_celda() -->
+        <div class="slide">
+            <h2> Obtener Valor de una Celda</h2>
+            <div class="code-block">
+<span class="code-line" style="--delay: 0s;"><span class="keyword">def</span> <span class="function">obtener_celda</span>(objeto, fila, columna):</span>
+<span class="code-line" style="--delay: 0.15s;">    matriz = <span class="function">_obtener_matriz</span>(objeto)</span>
+<span class="code-line" style="--delay: 0.3s;">    <span class="keyword">if</span> <span class="keyword">not</span> <span class="function">esta_dentro_de_limites</span>(matriz, fila, columna):</span>
+<span class="code-line" style="--delay: 0.45s;">        <span class="keyword">raise</span> <span class="function">IndexError</span>(...)</span>
+<span class="code-line" style="--delay: 0.6s;">    <span class="keyword">return</span> matriz[fila][columna]</span>
+            </div>
+            <div class="step" style="margin-top: 20px;">
+                <strong>¿Por qué validar primero?</strong>
+                <p>Evitamos que Python lance un error confuso. Controlamos exactamente qué pasa.</p>
+            </div>
+            <div class="step">
+                <strong>Mensaje de error personalizado:</strong> Decimos exactamente qué posición es inválida
+                <p>Facilita el debugging.</p>
+            </div>
+        </div>
+
+        <!-- Slide 23: recorrer_por_filas() -->
+        <div class="slide">
+            <h2> Recorrer la Matriz por Filas</h2>
+            <div class="code-block">
+<span class="code-line" style="--delay: 0s;"><span class="keyword">def</span> <span class="function">recorrer_por_filas</span>(objeto):</span>
+<span class="code-line" style="--delay: 0.15s;">    matriz = <span class="function">_obtener_matriz</span>(objeto)</span>
+<span class="code-line" style="--delay: 0.3s;">    <span class="keyword">for</span> f, fila <span class="keyword">in</span> <span class="function">enumerate</span>(matriz):</span>
+<span class="code-line" style="--delay: 0.45s;">        <span class="keyword">for</span> c, valor <span class="keyword">in</span> <span class="function">enumerate</span>(fila):</span>
+<span class="code-line" style="--delay: 0.6s;">            <span class="keyword">yield</span> f, c, valor</span>
+            </div>
+            <div class="step" style="margin-top: 20px;">
+                <strong>enumerate():</strong> Nos da tanto el índice como el valor
+                <p>Es mejor que usar range(len(...)) porque es más legible.</p>
+            </div>
+            <div class="step">
+                <strong>yield vs return:</strong> Esta es una función generadora
+                <p>Produce valores uno a uno (lazy evaluation). Ahorra memoria para matrices grandes.</p>
+            </div>
+            <div class="example" style="background: rgba(121, 192, 255, 0.08); border-left: 3px solid #79c0ff; padding: 15px; margin-top: 15px; border-radius: 4px;">
+                <strong>Ejemplo:</strong> <code>for fila, col, valor in recorrer_por_filas(lab): print(fila, col, valor)</code>
+            </div>
+        </div>
+
+        <!-- Slide 24: buscar_valor() -->
+        <div class="slide">
+            <h2> Buscar un Valor en la Matriz</h2>
+            <div class="code-block">
+<span class="code-line" style="--delay: 0s;"><span class="keyword">def</span> <span class="function">buscar_valor</span>(objeto, valor):</span>
+<span class="code-line" style="--delay: 0.15s;">    matriz = <span class="function">_obtener_matriz</span>(objeto)</span>
+<span class="code-line" style="--delay: 0.3s;">    <span class="keyword">for</span> f, fila <span class="keyword">in</span> <span class="function">enumerate</span>(matriz):</span>
+<span class="code-line" style="--delay: 0.45s;">        <span class="keyword">for</span> c, val <span class="keyword">in</span> <span class="function">enumerate</span>(fila):</span>
+<span class="code-line" style="--delay: 0.6s;">            <span class="keyword">if</span> val == valor:</span>
+<span class="code-line" style="--delay: 0.75s;">                <span class="keyword">return</span> (f, c)</span>
+<span class="code-line" style="--delay: 0.9s;">    <span class="keyword">return</span> <span class="keyword">None</span></span>
+            </div>
+            <div class="step" style="margin-top: 20px;">
+                <strong>¿Por qué devuelve None si no encuentra?</strong>
+                <p>Es el estándar de Python. Permite al usuario saber explícitamente si encontró algo o no.</p>
+            </div>
+            <div class="step">
+                <strong>¿Por qué itera en lugar de usar métodos de lista?</strong>
+                <p>Porque es una matriz 2D y necesitamos ambos índices (fila Y columna), no solo el valor.</p>
+            </div>
+            <div class="example" style="background: rgba(121, 192, 255, 0.08); border-left: 3px solid #79c0ff; padding: 15px; margin-top: 15px; border-radius: 4px;">
+                <strong>Usos:</strong> <code>buscar_entrada(lab)</code>, <code>buscar_salida(lab)</code> - atajos convenientes
+            </div>
+        </div>
+
+        <!-- Slide 25: Algoritmo BFS - Introducción -->
+        <div class="slide">
+            <h2> BFS: Breadth-First Search</h2>
+            <div class="explanation">
+                <strong>¿Qué es BFS?</strong> Un algoritmo que explora todas las celdas cercanas antes de ir más lejos.
+                <br><br>
+                <strong>Estructura de datos:</strong> Cola (FIFO - First In, First Out)
+                <p style="margin-top: 10px; font-size: 0.9em;">Es como una fila en el cine: el primero en llegar es el primero en ser servido.</p>
+            </div>
+            <div class="step" style="margin-top: 20px;">
+                <strong>¿Por qué BFS?</strong>
+                <ul style="margin-top: 10px;">
+                    <li>Garantiza encontrar el camino MÁS CORTO</li>
+                    <li>Funciona bien para grillas (como nuestro laberinto)</li>
+                    <li>Fácil de entender</li>
+                </ul>
+            </div>
+            <div class="diagram" style="margin-top: 20px;">
+                Cola: [entrada]<br>
+                → Procesa entrada<br>
+                → Agrega vecinos a la cola<br>
+                → Procesa primer vecino<br>
+                → Agrega sus vecinos a la cola<br>
+                ... hasta encontrar la salida
+            </div>
+        </div>
+
+        <!-- Slide 26: existe_camino() - Parte 1 -->
+        <div class="slide">
+            <h2> Verificar si Existe Camino - Parte 1</h2>
+            <div class="code-block">
+<span class="code-line" style="--delay: 0s;"><span class="keyword">def</span> <span class="function">existe_camino</span>(matriz):</span>
+<span class="code-line" style="--delay: 0.15s;">    entrada = <span class="keyword">None</span></span>
+<span class="code-line" style="--delay: 0.3s;">    salida = <span class="keyword">None</span></span>
+<span class="code-line" style="--delay: 0.45s;">    </span>
+<span class="code-line" style="--delay: 0.6s;">    <span class="keyword">for</span> fila <span class="keyword">in</span> <span class="function">range</span>(filas):</span>
+<span class="code-line" style="--delay: 0.75s;">        <span class="keyword">for</span> columna <span class="keyword">in</span> <span class="function">range</span>(columnas):</span>
+<span class="code-line" style="--delay: 0.9s;">            <span class="keyword">if</span> matriz[fila][columna] == <span class="number">2</span>:</span>
+<span class="code-line" style="--delay: 1.05s;">                entrada = (fila, columna)</span>
+<span class="code-line" style="--delay: 1.2s;">            <span class="keyword">elif</span> matriz[fila][columna] == <span class="number">3</span>:</span>
+<span class="code-line" style="--delay: 1.35s;">                salida = (fila, columna)</span>
+            </div>
+            <div class="step" style="margin-top: 20px;">
+                <strong>Paso 1: Encontrar entrada y salida</strong>
+                <p>Necesitamos saber de dónde empezar y a dónde queremos llegar.</p>
+            </div>
+        </div>
+
+        <!-- Slide 27: existe_camino() - Parte 2 -->
+        <div class="slide">
+            <h2> Verificar si Existe Camino - Parte 2</h2>
+            <div class="code-block">
+<span class="code-line" style="--delay: 0s;">    visitados = <span class="function">set</span>()</span>
+<span class="code-line" style="--delay: 0.15s;">    cola = [entrada]</span>
+<span class="code-line" style="--delay: 0.3s;">    visitados.<span class="function">add</span>(entrada)</span>
+<span class="code-line" style="--delay: 0.45s;">    </span>
+<span class="code-line" style="--delay: 0.6s;">    <span class="keyword">while</span> cola:</span>
+<span class="code-line" style="--delay: 0.75s;">        fila_actual, columna_actual = cola.<span class="function">pop</span>(<span class="number">0</span>)</span>
+            </div>
+            <div class="step" style="margin-top: 20px;">
+                <strong>visitados = set():</strong> Conjunto vacío
+                <p>Un set es más rápido para verificar "¿ya visité esto?" que una lista.</p>
+            </div>
+            <div class="step">
+                <strong>cola = [entrada]:</strong> Empezamos con la entrada
+            </div>
+            <div class="step">
+                <strong>cola.pop(0):</strong> Toma el primer elemento de la cola (FIFO)
+                <p>También podríamos usar `from collections import deque` para mayor eficiencia.</p>
+            </div>
+        </div>
+
+        <!-- Slide 28: existe_camino() - Parte 3 -->
+        <div class="slide">
+            <h2> Verificar si Existe Camino - Parte 3</h2>
+            <div class="code-block">
+<span class="code-line" style="--delay: 0s;">        <span class="keyword">if</span> (fila_actual, columna_actual) == salida:</span>
+<span class="code-line" style="--delay: 0.15s;">            <span class="keyword">return</span> <span class="keyword">True</span></span>
+<span class="code-line" style="--delay: 0.3s;">        </span>
+<span class="code-line" style="--delay: 0.45s;">        vecinos = [</span>
+<span class="code-line" style="--delay: 0.6s;">            (fila_actual - <span class="number">1</span>, columna_actual),  <span class="comment"># arriba</span></span>
+<span class="code-line" style="--delay: 0.75s;">            (fila_actual + <span class="number">1</span>, columna_actual),  <span class="comment"># abajo</span></span>
+<span class="code-line" style="--delay: 0.9s;">            (fila_actual, columna_actual - <span class="number">1</span>),  <span class="comment"># izquierda</span></span>
+<span class="code-line" style="--delay: 1.05s;">            (fila_actual, columna_actual + <span class="number">1</span>),  <span class="comment"># derecha</span></span>
+<span class="code-line" style="--delay: 1.2s;">        ]</span>
+            </div>
+            <div class="step" style="margin-top: 20px;">
+                <strong>¿Llegamos a la salida?</strong> Si sí, devolvemos True.
+                <p>BFS garantiza que este es el camino más corto.</p>
+            </div>
+            <div class="step">
+                <strong>Vecinos:</strong> Los 4 vecinos adyacentes (arriba, abajo, izq, der)
+                <p>No incluimos diagonales porque un laberinto típico no permite movimiento diagonal.</p>
+            </div>
+        </div>
+
+        <!-- Slide 29: existe_camino() - Parte 4 -->
+        <div class="slide">
+            <h2> Verificar si Existe Camino - Parte 4</h2>
+            <div class="code-block">
+<span class="code-line" style="--delay: 0s;">        <span class="keyword">for</span> vecino <span class="keyword">in</span> vecinos:</span>
+<span class="code-line" style="--delay: 0.15s;">            vf, vc = vecino</span>
+<span class="code-line" style="--delay: 0.3s;">            dentro = <span class="number">0</span> &lt;= vf &lt; filas <span class="keyword">and</span> <span class="number">0</span> &lt;= vc &lt; columnas</span>
+<span class="code-line" style="--delay: 0.45s;">            </span>
+<span class="code-line" style="--delay: 0.6s;">            <span class="keyword">if</span> dentro <span class="keyword">and</span> vecino <span class="keyword">not in</span> visitados:</span>
+<span class="code-line" style="--delay: 0.75s;">                valor = matriz[vf][vc]</span>
+<span class="code-line" style="--delay: 0.9s;">                <span class="keyword">if</span> valor != <span class="number">1</span>:  <span class="comment"># no es pared</span></span>
+<span class="code-line" style="--delay: 1.05s;">                    visitados.<span class="function">add</span>(vecino)</span>
+<span class="code-line" style="--delay: 1.2s;">                    cola.<span class="function">append</span>(vecino)</span>
+            </div>
+            <div class="step" style="margin-top: 20px;">
+                <strong>Para cada vecino:</strong> Verificamos 3 cosas
+                <ol style="margin-top: 10px;">
+                    <li>¿Está dentro del laberinto?</li>
+                    <li>¿Ya lo visitamos?</li>
+                    <li>¿No es una pared?</li>
+                </ol>
+            </div>
+            <div class="success" style="margin-top: 20px;">
+                Si pasa todas las pruebas, lo agregamos a la cola y a visitados.
+            </div>
+        </div>
+
+        <!-- Slide 30: Conclusión -->
+        <div class="slide">
+            <h2> Conclusión: Todo Conectado</h2>
+            <div class="step">
+                <strong>1. Clase Laberinto:</strong> Almacena datos de forma segura y validada
+            </div>
+            <div class="step">
+                <strong>2. Generador:</strong> Crea laberintos únicos usando recursión y aleatoriedad
+            </div>
+            <div class="step">
+                <strong>3. Operaciones:</strong> Proporcionan herramientas para interactuar con la matriz
+            </div>
+            <div class="step">
+                <strong>4. Búsqueda (BFS):</strong> Encuentra si existe un camino válido
+            </div>
+            <div class="success" style="margin-top: 30px;">
+                Todo funciona junto para crear un sistema completo y robusto. Cada parte tiene una responsabilidad clara y bien definida.
+            </div>
+        </div>
+
+        <!-- Controles -->
+        <div class="controls">
+            <div class="progress-track"><span id="progressBar" class="progress-bar"></span></div>
+            <button id="prevBtn" onclick="changeSlide(-1)">← Anterior</button>
+            <span class="slide-counter"><span id="currentSlide">1</span> / <span id="totalSlides">30</span></span>
+            <button id="nextBtn" onclick="changeSlide(1)">Siguiente →</button>
+        </div>
+    </div>
+
+    <script>
+        let currentSlide = 1;
+        const totalSlides = document.querySelectorAll('.slide').length;
+        document.getElementById('totalSlides').textContent = totalSlides;
+
+        function showSlide(n) {
+            const slides = document.querySelectorAll('.slide');
+            
+            if (n > totalSlides) currentSlide = totalSlides;
+            if (n < 1) currentSlide = 1;
+            
+            slides.forEach(slide => slide.classList.remove('active'));
+            slides[currentSlide - 1].classList.add('active');
+            
+            document.getElementById('currentSlide').textContent = currentSlide;
+            document.getElementById('prevBtn').disabled = currentSlide === 1;
+            document.getElementById('nextBtn').disabled = currentSlide === totalSlides;
+            document.getElementById('progressBar').style.width = `${(currentSlide / totalSlides) * 100}%`;
+
+            const activeSlide = slides[currentSlide - 1];
+            activeSlide.querySelectorAll('.code-line').forEach(line => {
+                line.style.animation = 'none';
+                void line.offsetWidth;
+                line.style.animation = '';
+            });
+        }
+
+        function changeSlide(n) {
+            currentSlide += n;
+            showSlide(currentSlide);
+        }
+
+        // Navegación con teclado
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') changeSlide(-1);
+            if (e.key === 'ArrowRight') changeSlide(1);
+            if (e.key === ' ') { e.preventDefault(); changeSlide(1); }
+        });
+
+        showSlide(currentSlide);
+    </script>
+</body>
+</html>

@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visualizador de Laberintos - Guía en las Sombras</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #7e8ba3 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(20, 20, 30, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8),
+                        0 0 40px rgba(74, 144, 226, 0.3);
+            max-width: 900px;
+            width: 100%;
+            border: 2px solid rgba(74, 144, 226, 0.2);
+        }
+
+        h1 {
+            text-align: center;
+            color: #4a90e2;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+            text-shadow: 0 2px 10px rgba(74, 144, 226, 0.5);
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #888;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            padding: 12px 25px;
+            border: 2px solid #4a90e2;
+            background: rgba(74, 144, 226, 0.1);
+            color: #4a90e2;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .tab-btn:hover {
+            background: rgba(74, 144, 226, 0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(74, 144, 226, 0.3);
+        }
+
+        .tab-btn.active {
+            background: #4a90e2;
+            color: white;
+            box-shadow: 0 0 20px rgba(74, 144, 226, 0.6);
+        }
+
+        .content {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .level-header {
+            background: rgba(74, 144, 226, 0.15);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-left: 5px solid #4a90e2;
+        }
+
+        .level-title {
+            color: #4a90e2;
+            font-size: 1.8em;
+            margin-bottom: 10px;
+        }
+
+        .level-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            color: #aaa;
+            font-size: 1em;
+        }
+
+        .info-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .info-label {
+            color: #4a90e2;
+            font-weight: 600;
+        }
+
+        .maze-container {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 30px;
+            border-radius: 15px;
+            overflow-x: auto;
+            border: 2px solid rgba(74, 144, 226, 0.2);
+            display: flex;
+            justify-content: center;
+        }
+
+        .maze {
+            font-family: 'Courier New', monospace;
+            line-height: 1.2;
+            color: #4a90e2;
+            font-size: 1.3em;
+            white-space: pre;
+            letter-spacing: -2px;
+        }
+
+        .legend {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 25px;
+            padding-top: 25px;
+            border-top: 2px solid rgba(74, 144, 226, 0.2);
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #aaa;
+            font-size: 0.95em;
+        }
+
+        .legend-symbol {
+            font-size: 1.5em;
+            font-weight: bold;
+            min-width: 30px;
+            text-align: center;
+        }
+
+        .entrance {
+            color: #4cd964;
+            font-weight: bold;
+        }
+
+        .exit {
+            color: #ff3b30;
+            font-weight: bold;
+        }
+
+        .wall {
+            color: #8b8b8b;
+        }
+
+        .path {
+            color: #333;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-top: 30px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            background: rgba(74, 144, 226, 0.15);
+            border: 2px solid #4a90e2;
+            color: #4a90e2;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.95em;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            background: #4a90e2;
+            color: white;
+            box-shadow: 0 5px 15px rgba(74, 144, 226, 0.3);
+        }
+
+        .difficulty {
+            display: inline-block;
+            padding: 5px 12px;
+            background: rgba(74, 144, 226, 0.2);
+            border-radius: 5px;
+            color: #4a90e2;
+            font-weight: 600;
+            font-size: 0.85em;
+            margin-left: 10px;
+        }
+
+        .difficulty.easy {
+            background: rgba(76, 217, 100, 0.2);
+            color: #4cd964;
+            border: 1px solid #4cd964;
+        }
+
+        .difficulty.medium {
+            background: rgba(255, 204, 0, 0.2);
+            color: #ffcc00;
+            border: 1px solid #ffcc00;
+        }
+
+        .difficulty.hard {
+            background: rgba(255, 59, 48, 0.2);
+            color: #ff3b30;
+            border: 1px solid #ff3b30;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 2px solid rgba(74, 144, 226, 0.2);
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .footer-team {
+            color: #4a90e2;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 1.8em;
+            }
+
+            .maze {
+                font-size: 1em;
+            }
+
+            .tabs {
+                gap: 10px;
+            }
+
+            .tab-btn {
+                padding: 10px 15px;
+                font-size: 0.85em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🗺️ Visualizador de Laberintos</h1>
+        <p class="subtitle">Guía en las Sombras - Proyecto de Estructuras de Datos</p>
+
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('nivel1')">NIVEL 1</button>
+            <button class="tab-btn" onclick="switchTab('nivel2')">NIVEL 2</button>
+            <button class="tab-btn" onclick="switchTab('nivel3')">NIVEL 3</button>
+        </div>
+
+        <!-- NIVEL 1 -->
+        <div id="nivel1" class="content active">
+            <div class="level-header">
+                <div class="level-title">
+                    Nivel 1
+                    <span class="difficulty easy">FÁCIL</span>
+                </div>
+                <div class="level-info">
+                    <div class="info-item">
+                        <span class="info-label">Dimensiones:</span>
+                        <span>5 × 7 (35 celdas)</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Dificultad:</span>
+                        <span>Introducción</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Complejidad:</span>
+                        <span>Baja - Ideal para aprender</span>
+                    </div>
+                </div>
+            </div>
+            <div class="maze-container">
+                <div class="maze">██████████████
+██E       ████
+██  ████    ██
+██        S ██
+██████████████</div>
+            </div>
+            <div class="legend">
+                <div class="legend-item">
+                    <span class="legend-symbol entrance">E</span>
+                    <span>Entrada</span>
+                </div>
+                <div class="legend-item">
+                    <span class="legend-symbol exit">S</span>
+                    <span>Salida</span>
+                </div>
+                <div class="legend-item">
+                    <span class="legend-symbol wall">██</span>
+                    <span>Pared</span>
+                </div>
+                <div class="legend-item">
+                    <span class="legend-symbol path">·</span>
+                    <span>Camino libre</span>
+                </div>
+            </div>
+            <div class="controls">
+                <button class="btn" onclick="descargar('nivel1')">📥 Descargar Datos</button>
+                <button class="btn" onclick="copiar('nivel1')">📋 Copiar</button>
+            </div>
+        </div>
+
+        <!-- NIVEL 2 -->
+        <div id="nivel2" class="content">
+            <div class="level-header">
+                <div class="level-title">
+                    Nivel 2
+                    <span class="difficulty medium">INTERMEDIO</span>
+                </div>
+                <div class="level-info">
+                    <div class="info-item">
+                        <span class="info-label">Dimensiones:</span>
+                        <span>9 × 9 (81 celdas)</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Dificultad:</span>
+                        <span>Moderado</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Complejidad:</span>
+                        <span>Media - Requiere exploración</span>
+                    </div>
+                </div>
+            </div>
+            <div class="maze-container">
+                <div class="maze">██████████████████
+██E     ██      ██
+██████  ██  ██  ██
+██  ██  ██  ██  ██
+██  ██  ██  ██  ██
+██  ██  ██  ██  ██
+██  ██  ██████  ██
+██            S ██
+██████████████████</div>
+            </div>
+            <div class="legend">
+                <div class="legend-item">
+                    <span class="legend-symbol entrance">E</span>
+                    <span>Entrada</span>
+                </div>
+                <div class="legend-item">
+                    <span class="legend-symbol exit">S</span>
+                    <span>Salida</span>
+                </div>
+                <div class="legend-item">
+                    <span class="legend-symbol wall">██</span>
+                    <span>Pared</span>
+                </div>
+                <div class="legend-item">
+                    <span class="legend-symbol path">·</span>
+                    <span>Camino libre</span>
+                </div>
+            </div>
+            <div class="controls">
+                <button class="btn" onclick="descargar('nivel2')">📥 Descargar Datos</button>
+                <button class="btn" onclick="copiar('nivel2')">📋 Copiar</button>
+            </div>
+        </div>
+
+        <!-- NIVEL 3 -->
+        <div id="nivel3" class="content">
+            <div class="level-header">
+                <div class="level-title">
+                    Nivel 3
+                    <span class="difficulty hard">DIFÍCIL</span>
+                </div>
+                <div class="level-info">
+                    <div class="info-item">
+                        <span class="info-label">Dimensiones:</span>
+                        <span>15 × 15 (225 celdas)</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Dificultad:</span>
+                        <span>Avanzado</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Complejidad:</span>
+                        <span>Alta - Algoritmos complejos</span>
+                    </div>
+                </div>
+            </div>
+            <div class="maze-container">
+                <div class="maze">██████████████████████████████
+██E         ██          ██  ██
+██████████  ██  ██████  ██  ██
+██          ██  ██  ██  ██  ██
+██  ██████████  ██  ██  ██  ██
+██      ██      ██          ██
+██████  ██  ██  ██████████  ██
+██  ██  ██  ██          ██  ██
+██  ██  ██████████████  ██  ██
+██  ██          ██      ██  ██
+██  ██████████  ██  ██████  ██
+██      ██      ██  ██      ██
+██  ██████  ██████  ██  ██████
+██                  ██    S ██
+██████████████████████████████</div>
+            </div>
+            <div class="legend">
+                <div class="legend-item">
+                    <span class="legend-symbol entrance">E</span>
+                    <span>Entrada</span>
+                </div>
+                <div class="legend-item">
+                    <span class="legend-symbol exit">S</span>
+                    <span>Salida</span>
+                </div>
+                <div class="legend-item">
+                    <span class="legend-symbol wall">██</span>
+                    <span>Pared</span>
+                </div>
+                <div class="legend-item">
+                    <span class="legend-symbol path">·</span>
+                    <span>Camino libre</span>
+                </div>
+            </div>
+            <div class="controls">
+                <button class="btn" onclick="descargar('nivel3')">📥 Descargar Datos</button>
+                <button class="btn" onclick="copiar('nivel3')">📋 Copiar</button>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>Proyecto: Guía en las Sombras - Sistema de Navegación en Laberintos</p>
+            <div class="footer-team">
+                👥 Carlos Daniel Jiménez · Estevan González Beltrán · Isabella Flórez
+            </div>
+            <p style="margin-top: 10px; color: #666;">Estructuras de Datos · Universidad</p>
+        </div>
+    </div>
+
+    <script>
+        function switchTab(tabName) {
+            // Ocultar todos los contenidos
+            const contents = document.querySelectorAll('.content');
+            contents.forEach(content => {
+                content.classList.remove('active');
+            });
+
+            // Desactivar todos los botones
+            const buttons = document.querySelectorAll('.tab-btn');
+            buttons.forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            // Mostrar el contenido seleccionado
+            document.getElementById(tabName).classList.add('active');
+
+            // Activar el botón correspondiente
+            event.target.classList.add('active');
+        }
+
+        function copiar(nivel) {
+            const elemento = document.getElementById(nivel);
+            const maze = elemento.querySelector('.maze').innerText;
+            
+            navigator.clipboard.writeText(maze).then(() => {
+                alert('✅ Laberinto copiado al portapapeles');
+            }).catch(() => {
+                alert('❌ Error al copiar');
+            });
+        }
+
+        function descargar(nivel) {
+            const elemento = document.getElementById(nivel);
+            const maze = elemento.querySelector('.maze').innerText;
+            const nombreArchivo = `laberinto_${nivel}.txt`;
+            
+            const blob = new Blob([maze], { type: 'text/plain' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = nombreArchivo;
+            a.click();
+            window.URL.revokeObjectURL(url);
+        }
+
+        // Hacer que los botones de las pestañas funcionen correctamente
+        document.querySelectorAll('.tab-btn').forEach((btn, index) => {
+            btn.addEventListener('click', function() {
+                const tabName = ['nivel1', 'nivel2', 'nivel3'][index];
+                switchTab(tabName);
+            });
+        });
+    </script>
+</body>
+</html>
