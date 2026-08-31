@@ -120,6 +120,15 @@ pytest tests/ --cov=src
 - Estevan Gonzalez Beltrán
 - Isabella Flórez
 
+## Uso Educativo de IA
+Este proyecto ha sido desarrollado utilizando IA (GitHub Copilot) de manera **educativa y responsable** para:
+- Recibir asesoramiento en el diseño de estructuras de datos
+- Optimizar algoritmos y mejorar la calidad del código
+- Facilitar la documentación del proyecto
+- Acelerar el proceso de desarrollo sin comprometer el aprendizaje
+
+El uso de IA ha sido complementario al aprendizaje, permitiendo que los integrantes se enfoquen en los conceptos fundamentales de Estructuras de Datos mientras se recibe retroalimentación técnica.
+
 ## Documentación Adicional
 - [Estructura y Representación del Laberinto](docs/estructura-laberinto.md)
 - [Material de Entrega - Operaciones](docs/material-de-entrega.md)
