@@ -53,3 +53,21 @@ Un laberinto puede representarse de la siguiente manera:
 1011001
 1000031
 1111111
+```
+
+---
+
+## Uso Educativo de IA
+
+Este componente y su documentación han sido desarrollados utilizando **IA (GitHub Copilot)** de manera educativa para:
+
+- Asesoramiento en el diseño de estructuras de datos
+- Validación de la representación matricial
+- Documentación clara y organizada del componente
+- Optimización del código de validación
+
+El uso de IA ha sido complementario al aprendizaje, facilitando que los estudiantes se enfoquen en los **conceptos fundamentales** de Estructuras de Datos mientras reciben retroalimentación técnica sobre implementación y documentación.
+
+---
+
+**Proyecto:** Guía en las Sombras - Videojuego de Laberintos

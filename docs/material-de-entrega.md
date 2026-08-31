@@ -158,3 +158,21 @@ y `pytest` instalado:
 pip install pytest
 python -m pytest tests/test_operaciones.py -v
 ```
+
+---
+
+## 6. Uso Educativo de IA
+
+Este componente y su documentación han sido desarrollados utilizando **IA (GitHub Copilot)** de manera educativa para:
+
+- Diseño de operaciones eficientes sobre matrices
+- Definición de casos de prueba exhaustivos
+- Documentación clara de funciones y su comportamiento
+- Validación de la calidad del código
+
+El uso de IA ha sido complementario al aprendizaje, facilitando que los estudiantes se enfoquen en los **algoritmos fundamentales** mientras reciben retroalimentación técnica sobre implementación, testing y documentación.
+
+---
+
+**Componente desarrollado por:** Estevan González Beltrán  
+**Proyecto:** Guía en las Sombras - Videojuego de Laberintos
