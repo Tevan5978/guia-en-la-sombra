@@ -133,3 +133,4 @@ El uso de IA ha sido complementario al aprendizaje, permitiendo que los integran
 ## Documentación Adicional
 - [Estructura y Representación del Laberinto](docs/estructura-laberinto.md)
 - [Material de Entrega - Operaciones](docs/material-de-entrega.md)
+
