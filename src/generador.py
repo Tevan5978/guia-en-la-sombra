@@ -1,3 +1,4 @@
+import os
 import random
 
 
@@ -9,6 +10,12 @@ def generar_laberinto(filas, columnas):
     Regresa una matriz (lista de listas) con:
     0 = camino, 1 = pared
     """
+
+    if filas < 3 or columnas < 3:
+        raise ValueError("El laberinto debe tener al menos 3 filas y 3 columnas.")
+
+    if filas % 2 == 0 or columnas % 2 == 0:
+        raise ValueError("Las dimensiones del laberinto deben ser impares.")
 
     # Empezamos con una matriz llena de paredes (1)
     matriz = [[1 for _ in range(columnas)] for _ in range(filas)]
@@ -131,6 +138,10 @@ def guardar_en_archivo(matriz, ruta):
     Guarda la matriz del laberinto en un archivo .txt,
     con el mismo formato que usa Laberinto.desde_archivo().
     """
+
+    directorio = os.path.dirname(ruta)
+    if directorio:
+        os.makedirs(directorio, exist_ok=True)
 
     with open(ruta, "w") as archivo:
 
