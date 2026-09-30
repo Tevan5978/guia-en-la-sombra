@@ -15,7 +15,7 @@ T = TypeVar("T")
 class Nodo(Generic[T]):
     """Nodo de la lista que almacena un valor y sus enlaces vecinos.
 
-    Attributes:
+    Attributos:
         valor: Dato almacenado, por ejemplo una posición del jugador.
         siguiente: Nodo que viene después, o ``None`` si es el último.
         anterior: Nodo que viene antes, o ``None`` si es el primero.
@@ -33,7 +33,7 @@ class HistorialMovimientos(Generic[T]):
     La lista comienza vacía. Las operaciones de inserción, eliminación y
     recorrido, así como las validaciones, pueden añadirse posteriormente.
 
-    Attributes:
+    Attributos:
         cabeza: Primer nodo del historial, o ``None`` si está vacío.
         cola: Último nodo del historial, o ``None`` si está vacío.
         tamano: Cantidad de nodos almacenados.
