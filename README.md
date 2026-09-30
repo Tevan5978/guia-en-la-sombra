@@ -7,14 +7,22 @@
 Aplicar de forma práctica los conceptos de complejidad algorítmica, estructuras de datos estáticas y dinámicas (matrices, pilas, colas, recursividad) y teoría de grafos, mediante la generación y resolución visual de laberintos.
 
 ## Características
-- ✅ Generación de laberintos usando algoritmos de backtracking.
-- ✅ Representación mediante matrices bidimensionales.
-- ✅ Validación de estructura de laberintos.
-- ✅ Carga de laberintos desde archivos de texto.
-- ✅ Operaciones sobre matrices (búsqueda, recorrido, validación).
-- ✅ Visualización en consola con símbolos.
-- ✅ Pruebas unitarias completas con pytest.
-- ✅ Documentación detallada de componentes.
+- Generación de laberintos usando algoritmos de backtracking.
+- epresentación mediante matrices bidimensionales.
+- Validación de estructura de laberintos.
+- Carga de laberintos desde archivos de texto.
+- Operaciones sobre matrices (búsqueda, recorrido, validación).
+- Visualización en consola con símbolos.
+- Pruebas unitarias completas con pytest.
+- Documentación detallada de componentes.
+
+## Actualizaciones recientes
+- Se agregó el visualizador de laberintos en consola mediante `ver_laberintos.py`.
+- Se añadió la carga automática de niveles desde la carpeta `laberintos/`.
+- Se incorporó validación de la estructura del laberinto antes de mostrarlo o operar con él.
+- Se mejoró la generación de mazos con entrada y salida definidas.
+- Se implementó la comprobación de caminos válidos entre entrada y salida usando BFS.
+- Se agregaron pruebas unitarias para comprobar generación, validación y operaciones del juego.
 
 ## Estructura del Proyecto
 

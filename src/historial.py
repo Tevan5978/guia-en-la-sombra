@@ -1,44 +1,42 @@
-"""Estructura base para almacenar un historial de movimientos.
+"""Estructura base para almacenar un historial de movimientos."""  # Documenta la finalidad general de esta estructura.
 
-La lista es doblemente enlazada: cada nodo conoce al nodo siguiente y al
-anterior. Las operaciones y validaciones se pueden incorporar en esta base.
-"""
+# La lista es doblemente enlazada: cada nodo conoce al nodo siguiente y al
+# anterior. Las operaciones y validaciones se pueden incorporar en esta base.
 
-from __future__ import annotations
+from __future__ import annotations  # Permite usar tipos de forma más flexible en annotations futuras.
 
-from typing import Generic, Optional, TypeVar
-
-
-T = TypeVar("T")
+from typing import Generic, Optional, TypeVar  # Importa utilidades de tipado y genéricos.
 
 
-class Nodo(Generic[T]):
-    """Nodo de la lista que almacena un valor y sus enlaces vecinos.
-
-    Attributos:
-        valor: Dato almacenado, por ejemplo una posición del jugador.
-        siguiente: Nodo que viene después, o ``None`` si es el último.
-        anterior: Nodo que viene antes, o ``None`` si es el primero.
-    """
-
-    def __init__(self, valor: T) -> None:
-        self.valor: T = valor
-        self.siguiente: Optional[Nodo[T]] = None
-        self.anterior: Optional[Nodo[T]] = None
+T = TypeVar("T")  # Define un tipo genérico que usará la lista enlazada.
 
 
-class HistorialMovimientos(Generic[T]):
-    """Estructura doblemente enlazada para un historial de movimientos.
+class Nodo(Generic[T]):  # Crea una estructura de nodo genérico para la lista doblemente enlazada.
+    """Nodo de la lista que almacena un valor y sus enlaces vecinos."""  # Explica el propósito del nodo.
 
-    La lista comienza vacía. Las operaciones de inserción, eliminación y
-    recorrido, así como las validaciones, pueden añadirse posteriormente.
+    # Attributos:
+    #     valor: Dato almacenado, por ejemplo una posición del jugador.
+    #     siguiente: Nodo que viene después, o ``None`` si es el último.
+    #     anterior: Nodo que viene antes, o ``None`` si es el primero.
 
-    Attributos:
-        cabeza: Primer nodo del historial, o ``None`` si está vacío.
-        cola: Último nodo del historial, o ``None`` si está vacío.
-        tamano: Cantidad de nodos almacenados.
-    """
+    def __init__(self, valor: T) -> None:  # Inicializa cada nodo con el valor recibido y enlaces vacíos.
+        self.valor: T = valor  # Guarda el dato contenido en el nodo.
+        self.siguiente: Optional[Nodo[T]] = None  # Apunta al siguiente nodo o None si no existe.
+        self.anterior: Optional[Nodo[T]] = None  # Apunta al nodo anterior o None si no existe.
 
+
+class HistorialMovimientos(Generic[T]):  # Define la estructura principal para guardar movimientos.
+    """Estructura doblemente enlazada para un historial de movimientos."""  # Describe la intención de la clase.
+
+    # La lista comienza vacía. Las operaciones de inserción, eliminación y
+    # recorrido, así como las validaciones, pueden añadirse posteriormente.
+
+    # Attributos:
+    #     cabeza: Primer nodo del historial, o ``None`` si está vacío.
+    #     cola: Último nodo del historial, o ``None`` si está vacío.
+    #     tamano: Cantidad de nodos almacenados.
+
+<<<<<<< HEAD
     def __init__(self) -> None:
         self.cabeza: Optional[Nodo[T]] = None
         self.cola: Optional[Nodo[T]] = None
@@ -132,21 +130,3 @@ class HistorialMovimientos(Generic[T]):
 
         return self.cabeza is None
 
-if __name__ == "__main__":
-
-    h = HistorialMovimientos()
-
-    h.agregar_al_final((1, 1))
-    h.agregar_al_final((1, 2))
-    h.agregar_al_final((1, 3))
-
-    print("Adelante:", h.recorrer_adelante())
-    print("Atrás:", h.recorrer_atras())
-
-    h.agregar_al_inicio((1, 0))
-    print("Con inicio agregado:", h.recorrer_adelante())
-
-    h.eliminar((1, 2))
-    print("Después de eliminar (1,2):", h.recorrer_adelante())
-
-    print("Tamaño final:", h.tamano)

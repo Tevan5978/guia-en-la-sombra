@@ -16,7 +16,10 @@ Convenciones de la matriz (ver docs/estructura-laberinto.md y Laberinto):
 
 from typing import List, Tuple, Optional, Iterator, Union
 
-from .laberinto import Laberinto
+try:
+    from .laberinto import Laberinto
+except ImportError:  # pragma: no cover - compatibilidad con imports directos
+    from laberinto import Laberinto
 
 Matriz = List[List[int]]
 

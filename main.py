@@ -16,7 +16,7 @@ print("=" * 50)
 laberinto = Laberinto.desde_archivo("laberintos/nivel1.txt")
 
 # 1. Validar estructura
-print("\n✓ VALIDACIÓN DEL LABERINTO")
+print("\nVALIDACIÓN DEL LABERINTO")
 print("-" * 50)
 try:
     laberinto.validar()
@@ -25,7 +25,7 @@ except ValueError as e:
     print(f"❌ Error de validación: {e}")
 
 # 2. Mostrar información
-print("\n📊 INFORMACIÓN DEL LABERINTO")
+print("\nINFORMACIÓN DEL LABERINTO")
 print("-" * 50)
 print(f"Dimensiones: {laberinto.filas} filas × {laberinto.columnas} columnas")
 entrada = buscar_entrada(laberinto)
@@ -34,19 +34,19 @@ print(f"Entrada (E): {entrada}")
 print(f"Salida (S): {salida}")
 
 # 3. Visualización numérica
-print("\n🔢 REPRESENTACIÓN NUMÉRICA")
+print("\nREPRESENTACIÓN NUMÉRICA")
 print("-" * 50)
 print("(0=Camino, 1=Pared, 2=Entrada, 3=Salida)")
 laberinto.mostrar()
 
 # 4. Visualización con símbolos
-print("\n🎨 VISUALIZACIÓN CON SÍMBOLOS")
+print("\nVISUALIZACIÓN CON SÍMBOLOS")
 print("-" * 50)
 print("(█=Pared, .=Camino, E=Entrada, S=Salida)")
 imprimir_laberinto(laberinto, usar_simbolos=True)
 
 # 5. Validación de acceso
-print("\n🔍 PRUEBAS DE ACCESO")
+print("\nPRUEBAS DE ACCESO")
 print("-" * 50)
 if entrada:
     f, c = entrada
@@ -58,7 +58,7 @@ if salida:
     print(f"Valor en salida {salida}: {valor} (esperado: 3)")
 
 # 6. Validar límites
-print("\n🚧 VALIDACIÓN DE LÍMITES")
+print("\nVALIDACIÓN DE LÍMITES")
 print("-" * 50)
 pruebas = [(0, 0), (laberinto.filas - 1, laberinto.columnas - 1), (100, 100)]
 for fila, col in pruebas:
@@ -66,5 +66,5 @@ for fila, col in pruebas:
     print(f"¿({fila}, {col}) dentro de límites?: {dentro}")
 
 print("\n" + "=" * 50)
-print("✓ Ejecución completada exitosamente")
+print("Ejecución completada exitosamente")
 print("=" * 50)
