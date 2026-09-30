@@ -36,7 +36,7 @@ class HistorialMovimientos(Generic[T]):  # Define la estructura principal para g
     #     cola: Último nodo del historial, o ``None`` si está vacío.
     #     tamano: Cantidad de nodos almacenados.
 
-<<<<<<< HEAD
+
     def __init__(self) -> None:
         self.cabeza: Optional[Nodo[T]] = None
         self.cola: Optional[Nodo[T]] = None
